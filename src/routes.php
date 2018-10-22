@@ -23,26 +23,26 @@ $app->group('/api', function () use ($app) {
 		function ($request, $response, $args) {
 			$db = $this->dbConn;
 			$sql= $db->prepare(
-				"SELECT * from Products WHERE 1=1"
+				"SELECT * from Products WHERE (1=1"
 			);
 
-			if ($input['color']) {
-			    $sql .= " (color = :color";
+			if (!empty($input['color'])) {
+			    $sql .= " AND color = :color";
 			    $sql->bindParam("color", $input['color']);
 			}
-			if ($input['style']) {
+			if (!empty($input['style'] =)) {
 			    $sql .= " AND style = :style";
 			    $sql->bindParam("style", $input['style']);
 			}
-			if ($input['materials']) {
+			if (!empty($input['materials'])) {
 			    $sql .= " AND materials = :materials";
 			    $sql->bindParam("materials", $input['materials']);
 			}
-			if ($input['brand']) {
+			if (!empty($input['brand'])) {
 			    $sql .= " AND brand = :brand";
 			    $sql->bindParam("brand", $input['brand']);
 			}
-			// $sql .= ")";
+			$sql .= ")";
 			
 			$sql->execute();
 			$products = $sql->fetchAll(PDO::FETCH_ASSOC);
