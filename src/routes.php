@@ -22,27 +22,15 @@ $app->group('/api', function () use ($app) {
 	$app->get('/productsFiltered', 
 		function ($request, $response, $args) {
 			$db = $this->dbConn;
-			$sql= $db->prepare(
-				"SELECT * from Products WHERE (1=1"
+			$sql = $db->prepare(
+				"SELECT * from Products WHERE ((color = :color OR :color IS NULL) AND (materials = :materials or :materials is NULL) AND (style = :style or :style is NULL) AND (brand = :brand or :brand is NULL));"
 			);
 
-			if (!empty($input['color'])) {
-			    $sql .= " AND color = :color";
-			    $sql->bindParam("color", $input['color']);
-			}
-			if (!empty($input['style'] =)) {
-			    $sql .= " AND style = :style";
-			    $sql->bindParam("style", $input['style']);
-			}
-			if (!empty($input['materials'])) {
-			    $sql .= " AND materials = :materials";
-			    $sql->bindParam("materials", $input['materials']);
-			}
-			if (!empty($input['brand'])) {
-			    $sql .= " AND brand = :brand";
-			    $sql->bindParam("brand", $input['brand']);
-			}
-			$sql .= ")";
+			$sql->bindParam("color", $input['color']);
+		    $sql->bindParam("style", $input['style']);
+		    $sql->bindParam("materials", $input['materials']);
+		    $sql->bindParam("brand", $input['brand']);
+
 			
 			$sql->execute();
 			$products = $sql->fetchAll(PDO::FETCH_ASSOC);
