@@ -19,5 +19,17 @@ $app->group('/api', function () use ($app) {
 		}
 	);
 
+	$app->get('/products', 
+		function ($request, $response, $args) {
+			$db = $this->dbConn;
+			$sth= $db->prepare(
+				"SELECT * FROM Products ORDER BY rating"
+			);
+			$sth->execute();
+			$products = $sth->fetchAll(PDO::FETCH_ASSOC);
+			return $this->response->withJson($products);
+		}
+	);
+
 });
 
