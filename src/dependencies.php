@@ -18,6 +18,6 @@ $container['logger'] = function ($c) {
     return $logger;
 };
 $container['dbConn'] = function ($c) {
-	$db = new PDO('mysql:host=127.0.0.1:3306;dbname=classicmodels;charset=utf8mb4', 'swarley', 'dbproject2018');
+	$db = new PDO('mysql:host=127.0.0.1:3306;dbname=retail;charset=utf8mb4', 'swarley', 'dbproject2018');
      return $db;
 };
