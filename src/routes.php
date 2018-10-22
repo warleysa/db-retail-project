@@ -28,22 +28,22 @@ $app->group('/api', function () use ($app) {
 
 			if ($input['color']) {
 			    $sql .= " (color = :color";
+			    $sql->bindParam("color", $input['color']);
 			}
 			if ($input['style']) {
 			    $sql .= " AND style = :style";
+			    $sql->bindParam("style", $input['style']);
 			}
 			if ($input['materials']) {
 			    $sql .= " AND materials = :materials";
+			    $sql->bindParam("materials", $input['materials']);
 			}
 			if ($input['brand']) {
 			    $sql .= " AND brand = :brand";
+			    $sql->bindParam("brand", $input['brand']);
 			}
-			$sql .= ")";
-
-			$sql->bindParam("color", $input['color']);
-			$sql->bindParam("style", $input['style']);
-			$sql->bindParam("materials", $input['materials']);
-			$sql->bindParam("brand", $input['brand']);
+			// $sql .= ")";
+			
 			$sql->execute();
 			$products = $sql->fetchAll(PDO::FETCH_ASSOC);
 			return $this->response->withJson($products);
