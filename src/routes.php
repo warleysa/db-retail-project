@@ -26,10 +26,10 @@ $app->group('/api', function () use ($app) {
 				"SELECT * from Products WHERE ((color = :color OR :color IS NULL) AND (materials = :materials or :materials is NULL) AND (style = :style or :style is NULL) AND (brand = :brand or :brand is NULL));"
 			);
 
-			$sql->bindParam("color", $args['color']);
-		    $sql->bindParam("style", $args['style']);
-		    $sql->bindParam("materials", $args['materials']);
-		    $sql->bindParam("brand", $args['brand']);
+			$sql->bindParam("color", $app->request()->get('color'));
+		    $sql->bindParam("style", $app->request()->get('style'));
+		    $sql->bindParam("materials", $app->request()->get('materials'));
+		    $sql->bindParam("brand", $app->request()->get('brand'));
 
 			
 			$sql->execute();
