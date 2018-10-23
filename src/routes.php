@@ -22,18 +22,37 @@ $app->group('/api', function () use ($app) {
 	$app->get('/productsFiltered', 
 		function ($request, $response, $args) {
 			$db = $this->dbConn;
-			$sql = $db->prepare(
-				"SELECT * from Products WHERE ((color = :color OR :color IS NULL) AND (materials = :materials or :materials is NULL) AND (style = :style or :style is NULL) AND (brand = :brand or :brand is NULL));"
-			);
 
-			$sql->bindParam("color", $app->request()->get('color'));
-		    $sql->bindParam("style", $app->request()->get('style'));
-		    $sql->bindParam("materials", $app->request()->get('materials'));
-		    $sql->bindParam("brand", $app->request()->get('brand'));
+			$by_color = $this->request->get('color');
+		    $by_style = $this->request->get('style');
+		    $by_materials = $this->request->get('materials');
+		    $by_brand = $this->request->get('brand');
 
+		    $query = "SELECT * FROM Products";
+		    $conditions = array();
+
+		    if(! empty($by_color)) {
+		      $conditions[] = "color='$by_color'";
+		    }
+		    if(! empty($by_style)) {
+		      $conditions[] = "style='$by_style'";
+		    }
+		    if(! empty($by_materials)) {
+		      $conditions[] = "materials='$by_materials'";
+		    }
+		    if(! empty($by_brand)) {
+		      $conditions[] = "brand='$by_brand'";
+		    }
+
+		    $sql = $query;
+		    if (count($conditions) > 0) {
+		      $sql .= " WHERE " . implode(' AND ', $conditions);
+		    }
+
+		    $sth = $db->prepare($sql);
 			
-			$sql->execute();
-			$products = $sql->fetchAll(PDO::FETCH_ASSOC);
+			$sth->execute();
+			$products = $sth->fetchAll(PDO::FETCH_ASSOC);
 			return $this->response->withJson($products);
 		}
 	);
