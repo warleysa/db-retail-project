@@ -21,8 +21,7 @@ $app->group('/api', function () use ($app) {
 
 	$app->get('/productsFiltered', 
 		function ($request, $response, $args) {
-			$input = $request->getQueryParams()
-
+			$input = $request->getQueryParams();
 			$by_color = $input['color'];
 		    $by_style = $input['style'];
 		    $by_materials = $input['materials'];
