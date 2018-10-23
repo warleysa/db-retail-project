@@ -9,7 +9,7 @@ $app->group('/api', function () use ($app) {
 	$app->post('/user',
 		function ($request, $response) {
 			$input = $request->getParsedBody();
-			$sql = "SELECT EXISTS(SELECT * FROM Users WHERE email = :email AND password = SHA1(:password) loginAuth;";
+			$sql = "SELECT EXISTS(SELECT * FROM Users WHERE email = :email AND password = SHA1(:password)) loginAuth;";
 			$sth = $this->dbConn->prepare($sql);
 			$sth->bindParam("email", $input['email']);
 			$sth->bindParam("password", $input['password']);
