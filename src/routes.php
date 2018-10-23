@@ -21,12 +21,12 @@ $app->group('/api', function () use ($app) {
 
 	$app->get('/productsFiltered', 
 		function ($request, $response, $args) {
-			$db = $this->dbConn;
+			$input = $request->getQueryParams()
 
-			$by_color = $this->request->get('color');
-		    $by_style = $this->request->get('style');
-		    $by_materials = $this->request->get('materials');
-		    $by_brand = $this->request->get('brand');
+			$by_color = $input['color'];
+		    $by_style = $input['style'];
+		    $by_materials = $input['materials'];
+		    $by_brand = $input['brand'];
 
 		    $query = "SELECT * FROM Products";
 		    $conditions = array();
@@ -48,8 +48,7 @@ $app->group('/api', function () use ($app) {
 		    if (count($conditions) > 0) {
 		      $sql .= " WHERE " . implode(' AND ', $conditions);
 		    }
-
-		    $sth = $db->prepare($sql);
+		    $sth = $this->dbConn->prepare($sql);
 			
 			$sth->execute();
 			$products = $sth->fetchAll(PDO::FETCH_ASSOC);
