@@ -28,7 +28,7 @@ $app->group('/api', function () use ($app) {
 			$sth->bindParam("email", $input['email']);
 			$sth->bindParam("password", $input['password']);
 			$sth->execute();
-			$registerOut = $sth->fetchObject();
+			$registerOut = $sth->fetchAll();
 			return $this->response->withJson($registerOut);
 		}
 	);
