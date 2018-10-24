@@ -6,7 +6,7 @@ use Slim\Http\Response;
 // Routes - Sam Warley - CSE 3330 - Homework 6
 
 $app->group('/api', function () use ($app) {
-	$app->post('/user',
+	$app->post('/login',
 		function ($request, $response) {
 			$input = $request->getParsedBody();
 			$sql = "SELECT EXISTS(SELECT * FROM Users WHERE email = :email AND password = SHA1(:password)) loginAuth;";
@@ -16,6 +16,20 @@ $app->group('/api', function () use ($app) {
 			$sth->execute();
 			$loginAuth = $sth->fetchObject();
 			return $this->response->withJson($loginAuth);
+		}
+	);
+
+	$app->post('/register',
+		function ($request, $response) {
+			$input = $request->getParsedBody();
+			$sql = "INSERT INTO Users (username, password, email) VALUES (:username, SHA1(:password), :email)";
+			$sth = $this->dbConn->prepare($sql);
+			$sth->bindParam("username", $input['username']);
+			$sth->bindParam("email", $input['email']);
+			$sth->bindParam("password", $input['password']);
+			$sth->execute();
+			$registerOut = $sth->fetchObject();
+			return $this->response->withJson($registerOut);
 		}
 	);
 
