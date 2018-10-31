@@ -22,13 +22,15 @@ $app->group('/api', function () use ($app) {
 	$app->post('/register',
 		function ($request, $response) {
 			$input = $request->getParsedBody();
-			$sql = "INSERT INTO Users (username, password, email) VALUES (:username, SHA1(:password), :email)";
+			$sql = "INSERT INTO Users (username, password, email, first_name, last_name) VALUES (:username, SHA1(:password), :email, :first_name, :last_name)";
 			$sth = $this->dbConn->prepare($sql);
 			$sth->bindParam("username", $input['username']);
 			$sth->bindParam("email", $input['email']);
 			$sth->bindParam("password", $input['password']);
+			$sth->bindParam("first_name", $input['first_name']);
+			$sth->bindParam("last_name", $input['last_name']);
 			$sth->execute();
-			$registerOut = $sth->fetchAll();
+			$registerOut = $sth->fetchAll(PDO::FETCH_ASSOC);
 			return $this->response->withJson($registerOut);
 		}
 	);
