@@ -29,7 +29,10 @@ $app->group('/api', function () use ($app) {
 			$sth->bindParam("first_name", $input['first_name']);
 			$sth->bindParam("last_name", $input['last_name']);
 			$sth->execute();
-			$registerOut = $sth->fetchObject();
+			$sql2 = "SELECT id, first_name, email, last_name FROM 'Users' WHERE 'id' = LAST_INSERT_ID()";
+			$sth2 = $this->dbConn->prepare($sql2);
+			$sth2->execute();
+			$registerOut = $sth2->fetchObject();
 			return $this->response->withJson($registerOut);
 		}
 	);
