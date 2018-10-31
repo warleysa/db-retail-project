@@ -22,9 +22,8 @@ $app->group('/api', function () use ($app) {
 	$app->post('/register',
 		function ($request, $response) {
 			$input = $request->getParsedBody();
-			$sql = "INSERT INTO Users (username, password, email, first_name, last_name) VALUES (:username, SHA1(:password), :email, :first_name, :last_name)";
+			$sql = "INSERT INTO Users ( password, email, first_name, last_name) VALUES ( SHA1(:password), :email, :first_name, :last_name)";
 			$sth = $this->dbConn->prepare($sql);
-			$sth->bindParam("username", $input['username']);
 			$sth->bindParam("email", $input['email']);
 			$sth->bindParam("password", $input['password']);
 			$sth->bindParam("first_name", $input['first_name']);
