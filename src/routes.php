@@ -24,9 +24,10 @@ $app->group('/api', function () use ($app) {
 			$input = $request->getParsedBody();
 			$sqlCheck = "SELECT EXISTS(SELECT email FROM Users WHERE email = :email)";
 			$sthCheck = $this->dbConn->prepare($sqlCheck);
+			$sthCheck->bindParam("email", $input['email']);
 			$sthCheck->execute();
 			$sqlCheckResult = $sthCheck->fetchObject();
-			if($sqlCheckResult == 1) {
+			if($sqlCheckResult == '1') {
 				$errorCode = -1;
 				return $this->response->withJson($errorCode);
 			} else {
