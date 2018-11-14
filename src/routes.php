@@ -9,27 +9,39 @@ $app->group('/api', function () use ($app) {
 	$app->post('/login',
 		function ($request, $response) {
 			$input = $request->getParsedBody();
-			$sql = "SELECT EXISTS(SELECT * FROM Users WHERE email = :email AND password = SHA1(:password)) loginAuth;";
+			$sql = "SELECT email FROM Users WHERE email = :email AND password = SHA1(:password) LIMIT 1";
 			$sth = $this->dbConn->prepare($sql);
 			$sth->bindParam("email", $input['email']);
 			$sth->bindParam("password", $input['password']);
 			$sth->execute();
-			$loginAuth = $sth->fetchObject();
-			return $this->response->withJson($loginAuth);
+			$sqlCheckResult = $sth->fetchAll(PDO::FETCH_OBJ);
+			$num_rows = count($sqlCheckResult);
+			if($num_rows == 0) {
+				$resultJson->loginAuth = 0;
+				return $this->response->withJson($resultJson);
+			} else {
+				$sqlUser = "SELECT id, first_name, email, last_name, 1 as loginAuth FROM Users WHERE email = :email";
+				$sthUser = $this->dbConn->prepare($sqlUser);
+				$sthUser->bindParam("email", $input['email']);
+				$sthUser->execute();
+				$userData = $sthUser->fetchObject();
+				return $this->response->withJson($userData);
+			}
 		}
 	);
 
 	$app->post('/register',
 		function ($request, $response) {
 			$input = $request->getParsedBody();
-			$sqlCheck = "SELECT EXISTS(SELECT email FROM Users WHERE email = :email)";
+			$sqlCheck = "SELECT email FROM Users WHERE email = :email LIMIT 1";
 			$sthCheck = $this->dbConn->prepare($sqlCheck);
 			$sthCheck->bindParam("email", $input['email']);
 			$sthCheck->execute();
-			$sqlCheckResult = $sthCheck->fetchObject();
-			if($sqlCheckResult == '1') {
-				$errorCode = -1;
-				return $this->response->withJson($errorCode);
+			$sqlCheckResult = $sthCheck->fetchAll(PDO::FETCH_OBJ);
+			$num_rows = count($sqlCheckResult);
+			if($num_rows == 1) {
+				$resultJson->errorCode = -1;
+				return $this->response->withJson($resultJson);
 			} else {
 				$sql = "INSERT INTO Users (password, email, first_name, last_name) VALUES (SHA1(:password), :email, :first_name, :last_name)";
 				$sth = $this->dbConn->prepare($sql);
@@ -38,7 +50,7 @@ $app->group('/api', function () use ($app) {
 				$sth->bindParam("first_name", $input['first_name']);
 				$sth->bindParam("last_name", $input['last_name']);
 				$sth->execute();
-				$sql2 = "SELECT id, first_name, email, last_name FROM Users WHERE id = LAST_INSERT_ID()";
+				$sql2 = "SELECT id, first_name, email, last_name, 1 as errorCode FROM Users WHERE id = LAST_INSERT_ID()";
 				$sth2 = $this->dbConn->prepare($sql2);
 				$sth2->execute();
 				$registerOut = $sth2->fetchObject();
@@ -110,11 +122,10 @@ $app->group('/api', function () use ($app) {
 	$app->post('/viewed',
 		function ($request, $response) {
 			$input = $request->getParsedBody();
-			$sql = "INSERT INTO User_Viewed (user_id, prod_id, date, id) VALUES (:user_id, :prod_id, :date, :id)";
+			$sql = "INSERT INTO User_Viewed (user_id, prod_id, id) VALUES (:user_id, :prod_id, :id)";
 			$sth = $this->dbConn->prepare($sql);
 			$sth->bindParam("user_id", $input['user_id']);
 			$sth->bindParam("prod_id", $input['prod_id']);
-			$sth->bindParam("date", $input['date']);
 			$sth->bindParam("id", $input['id']);
 			$sth->execute();
 			$viewedProduct = $sth->fetchObject();
